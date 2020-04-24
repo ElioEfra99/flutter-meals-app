@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_meals_app/category_meals_screen.dart';
-import './categories_screen.dart';
+import 'package:flutter_meals_app/screens/favorites_screen.dart';
+import 'package:flutter_meals_app/screens/tabs_screen.dart';
+
+import './screens/meal_detail_screen.dart';
+import './screens/category_meals_screen.dart';
+import './screens/categories_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,10 +32,20 @@ class MyApp extends StatelessWidget {
               ),
             ),
       ),
-      home: CategoriesScreen(),
+      // home: CategoriesScreen(),
+      initialRoute: '/', // Default is '/'
       routes: {
-        '/category-meals': (ctx) => CategoryMealsScreen(),
+        '/': (ctx) => TabsScreen(),
+        CategoryMealsScreen.routeName: (ctx) => CategoryMealsScreen(),
+        MealDetailScreen.routeName: (ctx) => MealDetailScreen(),
       },
+      onGenerateRoute: (settings) { // reached if you're going to a named route with pushName(), that is nor registered in routes table
+        print(settings.arguments);            // We don't need it and it is not needed all the time
+        // return MaterialPageRoute(builder: (ctx) => CategoriesScreen()); 
+      }, 
+      onUnknownRoute: (settings) { // Reached when flutter failed to build a screen, before it throws an error
+        return MaterialPageRoute(builder: (ctx) => CategoriesScreen()); // Prevent user seeing crash screens
+      }, // Like 404 error page
     );
   }
 }

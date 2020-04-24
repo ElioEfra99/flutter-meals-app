@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_meals_app/category_item.dart';
+import '../widget/category_item.dart';
 
-import './dummy_data.dart';
+import '../dummy_data.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('DeliMeal'),
-      ),
-      body: GridView(
+    return GridView(
         padding: const EdgeInsets.all(25),
         children: DUMMY_CATEGORIES
             .map(
@@ -29,7 +25,6 @@ class CategoriesScreen extends StatelessWidget {
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
         ),
-      ),
     );
   }
 }
