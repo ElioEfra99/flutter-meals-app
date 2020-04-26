@@ -1,14 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_meals_app/screens/favorites_screen.dart';
-import 'package:flutter_meals_app/screens/tabs_screen.dart';
 
+import './dummy_data.dart';
+import './screens/filters_screen.dart';
+import './screens/tabs_screen.dart';
 import './screens/meal_detail_screen.dart';
 import './screens/category_meals_screen.dart';
 import './screens/categories_screen.dart';
+import './models/meal.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Map<String, bool> _filters = {
+    'gluten': false,
+    'lactose': false,
+    'vegan': false,
+    'vegetarian': false,
+  };
+  
+  List<Meal> _availableMeals = DUMMY_MEALS;
+
+  void _setFilters(Map<String, bool> filterData) {
+    setState(() {
+      _filters = filterData;
+
+      _availableMeals = DUMMY_MEALS.where((meal) {
+        if (_filters['gluten'] && !meal.isGlutenFree) {
+          return false; // In where method, we have to return false if we don't want to include a certain item in the newly generated list
+        }
+        if (_filters['lactose'] && !meal.isLactoseFree) {
+          return false;
+        }
+        if (_filters['vegan'] && !meal.isVegetarian) {
+          return false;
+        }
+        if (_filters['vegetarian'] && !meal.isVegetarian) {
+          return false;
+        }
+        return true;
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,15 +74,22 @@ class MyApp extends StatelessWidget {
       initialRoute: '/', // Default is '/'
       routes: {
         '/': (ctx) => TabsScreen(),
-        CategoryMealsScreen.routeName: (ctx) => CategoryMealsScreen(),
+        CategoryMealsScreen.routeName: (ctx) =>
+            CategoryMealsScreen(_availableMeals),
         MealDetailScreen.routeName: (ctx) => MealDetailScreen(),
+        FlitersScreen.routeName: (ctx) => FlitersScreen(_filters, _setFilters),
       },
-      onGenerateRoute: (settings) { // reached if you're going to a named route with pushName(), that is nor registered in routes table
-        print(settings.arguments);            // We don't need it and it is not needed all the time
-        // return MaterialPageRoute(builder: (ctx) => CategoriesScreen()); 
-      }, 
-      onUnknownRoute: (settings) { // Reached when flutter failed to build a screen, before it throws an error
-        return MaterialPageRoute(builder: (ctx) => CategoriesScreen()); // Prevent user seeing crash screens
+      onGenerateRoute: (settings) {
+        // reached if you're going to a named route with pushName(), that is nor registered in routes table
+        print(settings
+            .arguments); // We don't need it and it is not needed all the time
+        // return MaterialPageRoute(builder: (ctx) => CategoriesScreen());
+      },
+      onUnknownRoute: (settings) {
+        // Reached when flutter failed to build a screen, before it throws an error
+        return MaterialPageRoute(
+            builder: (ctx) =>
+                CategoriesScreen()); // Prevent user seeing crash screens
       }, // Like 404 error page
     );
   }
