@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import '../dummy_data.dart';
 
 class MealDetailScreen extends StatelessWidget {
-  const MealDetailScreen();
+  final Function toggleFavorite;
+  final Function isFavorite;
+
+  const MealDetailScreen(this.toggleFavorite, this.isFavorite);
 
   static const routeName = '/meal-detail';
 
@@ -37,15 +40,20 @@ class MealDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mealId = ModalRoute.of(context).settings.arguments as String;
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => mealId == meal.id);
+    // final mediaQuery = MediaQuery.of(context);
+    final appBar = AppBar(
+      title: Text('${selectedMeal.title}'),
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${selectedMeal.title}'),
-      ),
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Container(
-              height: 300,
+              height: 300, // (mediaQuery.size.height -
+              //         appBar.preferredSize.height -
+              //         mediaQuery.padding.top) *
+              //     0.3,
               width: double.infinity,
               child: Image.network(
                 selectedMeal.imageUrl,
@@ -57,7 +65,7 @@ class MealDetailScreen extends StatelessWidget {
               ListView.builder(
                 itemBuilder: (ctx, index) => Card(
                     color: Theme.of(context).accentColor,
-                    child: Padding(
+                      child: Padding(
                       padding: EdgeInsets.symmetric(
                         vertical: 5,
                         horizontal: 10,
@@ -92,10 +100,13 @@ class MealDetailScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.delete),
-        onPressed: () {
-          Navigator.of(context).pop(mealId);  // Passes the data back when page is removed/popped
-        },
+        child: isFavorite(mealId)
+            ? Icon(Icons.favorite)
+            : Icon(Icons.favorite_border),
+        onPressed: () => toggleFavorite(mealId),
+        // () {
+        //   Navigator.of(context).pop(mealId);  // Passes the data back when page is removed/popped
+        // },
       ),
     );
   }
